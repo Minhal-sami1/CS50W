@@ -1,0 +1,29 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Encyclopedia: Edit
+{% endblock %}
+
+{% block body %}
+{% if error %}
+<div class="alert alert-danger" role="alert">
+    {{error}}
+  </div>
+{% endif %}
+<form action="{% url 'edit' title %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="title"> <strong> Title: </strong> </label>
+        <textarea name="title" id="q" cols="2" rows="2" type="text" style="width:500pt; height:56px;" placeholder="Title Here!" autocomplete="off" autofocus class="form-control form-control-lg " required >{{ title }}</textarea>
+    </div>
+    <div>
+        <label for="description"> <strong> Content: </strong> </label>
+        <textarea name="description" id="entry" cols="5" rows="3" placeholder="Contents here!" autocomplete="off" autofocus class="form-control form-control-lg " required>{{entry}}</textarea>
+    </div>
+    <br> <br>
+    <div>
+        <button type="submit" class="btn btn-outline-primary"><strong> Save! </strong></button>
+        <button type="reset" class="btn btn-outline-danger"><strong> Discard! </strong></button>
+    </div>
+</form>
+{% endblock %}

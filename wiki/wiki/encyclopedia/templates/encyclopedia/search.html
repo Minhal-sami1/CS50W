@@ -1,0 +1,21 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Encyclopedia: Search
+{% endblock %}
+
+{% block body %}
+    {% if list %}
+        <h1>All results for {{search}}</h1>
+
+        <ul>
+            {% for element in list %}
+                <li><a href= "{% url 'get_entry' element %}">{{ element }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+       No data Found for {{ search }} !!
+      </div>
+    {% endif %}
+{% endblock %}
