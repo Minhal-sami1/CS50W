@@ -1,0 +1,96 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+
+
+    
+<div>
+    {% if user.is_authenticated %}
+        <form action=" {% url 'change_listing' product.id 'watchlist' %} " method="POST">
+            {% csrf_token %}
+            {% if status %}
+            <button type="unwatch" value="unwatch" name="unwatch"  class="btn btn-outline-danger ">Un-Watchlist!</button>
+            {% else %}
+            <button type="wathlist" value="watch" name="watch" class="btn btn-outline-success ">Watchlist!</button>
+            {% endif %}
+        </form>
+    {% endif %}   
+</div>
+
+{% if owner %}
+    <div>
+        <br>
+        <form action="{% url 'change_listing' product.id "close" %}" method="POST">
+            {% csrf_token %}
+            <button type="close" value="close" name="close" class="btn btn-outline-secondary ">Close listing!</button>        
+        </form>
+    </div>
+{% endif %}    
+
+
+
+<div style="text-align: center; max-width: 100%; max-height: 100%;">
+    <h2>Product:  {{ product.name }}</h2>
+    
+    <img src="{{ product.image.url }}" alt="{{product.name}}" style="max-width: 70%; max-height: 70%;">
+
+    <br><br>
+    <h3>Starting Bid: ${{product.first_bid}}</h3><br>
+    {% if current_bid %}
+        <h3>Current highest bid: ${{ current_bid}}</h3>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <form action="{% url 'change_listing' product.id "bid" %}" method="POST">
+            {% csrf_token %}
+            <br>
+            <label for="bid" style="padding: 15px; text-align: left;"><strong> Your Bid: </strong></label>
+            {{ form.bid }}
+            <br>
+            <button type="submit" class="btn btn-outline-primary"><strong> BID! </strong></button>
+            <button type="reset" class="btn btn-outline-danger"><strong> Discard! </strong></button>
+        </form>
+    {% endif %}
+        
+    <br><br>
+    <label for="description" style="padding: 15px; text-align: left;"><strong> Description: </strong></label>
+    <p class="card-text">{{ product.description }}</p><br>
+    <p class="card-text"><small class="text-muted">Posted: {{ product.date }}, Owner: {{ product.owner }}</small></p>
+    <br><br>
+    
+    
+    {% if comments %}
+        
+    <label for="comments" style="padding: 15px; text-align: left;"><strong> Comments: </strong></label>
+    <div >
+    {% for comm in comments %}
+        
+    <br>
+    <div class="card text-white bg-dark mb-3 mx-auto" style="max-width: 30%; max-height:30%; text-align: center;">
+        <div class="card-body ">
+            <h5 class="card-title">User: {{comm.user}}</h5>
+            <p class="card-text">comment: "{{comm.comment}}"</p>
+            <p class="text-muted">date: {{comm.date}}</p>
+        </div>
+
+    </div>
+    <br>
+    {% endfor %}
+    </div>
+    {% endif %}
+    
+{% if user.is_authenticated %}
+    <form action="{% url 'change_listing' product.id "comment"%}" method="POST">
+        {% csrf_token %}
+        <br>
+        <label for="comment" style="padding: 15px; text-align: left;"><strong> Your Comment: </strong></label>
+        {{ comment.comment }}
+        <br>
+        <button type="submit" class="btn btn-outline-primary"><strong> Comment! </strong></button>
+        <button type="reset" class="btn btn-outline-danger"><strong> Discard! </strong></button>
+    </form>
+{% endif %}
+    <br><br><br>
+</div>
+{% endblock %}

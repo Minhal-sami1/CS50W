@@ -1,0 +1,54 @@
+{% extends 'auctions/layout.html' %}
+{% block title %}: New Product{% endblock title %}
+
+{% block body %}
+<h1>New Product Registeration</h1>
+
+<br>
+
+<div>
+
+{% if message %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>404! {{ message | safe }} </strong>
+  </div>
+{% endif %}
+{% if success %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>{{ success }} </strong>
+  </div>
+{% endif %}
+
+<form action="{% url 'add' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    
+    <label for="name" style="padding: 15px;"><strong> Product Name: </strong></label>
+    {{ form.name }}
+    <br>
+    
+    <label for="category" style="padding: 15px;"><strong>Category:</strong></label> 
+    {{ form.category }}
+
+    <br>
+
+    <label for="image" style="padding: 15px;"><strong> Image: </strong></label>
+    {{ form.image }}
+    <br>
+
+    <label for="bid" style="padding: 15px;"><strong> Starting Bid: </strong></label>
+    {{ form.first_bid }}
+    <br>
+
+    <label for="description"><strong> Description: </strong></label>
+      {{ form.description }}
+    <br>
+    <br>
+
+    <button type="submit" class="btn btn-outline-primary"><strong> Save! </strong></button>
+    <button type="reset" class="btn btn-outline-danger"><strong> Discard! </strong></button>
+
+</form>
+<div>
+
+{% endblock body %}

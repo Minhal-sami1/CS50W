@@ -1,0 +1,17 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+
+{% if error %}
+<div class="alert alert-danger" role="alert" style="text-align:center; font-size: xx-large;">
+    {{ error }}
+</div>
+{% endif %}
+<div>
+    {% if success %}
+    <div class="alert alert-success" role="alert" style="text-align:center; font-size: xx-large;">
+        {{ success }}!
+    </div>
+    {% endif %}   
+</div>
+{% endblock body %}
