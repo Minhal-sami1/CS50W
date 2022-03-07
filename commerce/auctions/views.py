@@ -1,5 +1,3 @@
-from distutils.log import error
-from urllib.parse import uses_relative
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -98,11 +96,18 @@ def change_listing(request, product_id ,type):
     product = Listing.objects.get(id = product_id)
 
     if type == "bid":
+        try:
+            user = User.objects.get(username = request.user)
+        except User.DoesNotExist:
+            user = None
+        try:
+            data_bid = Bidding.objects.get(user = user, listing = product_id)
+        except Bidding.DoesNotExist:
+            data_bid = None
         form = bid_form(request.POST)
         form.instance.user = request.user
         form.instance.listing = product
         data = Bidding.objects.filter(listing = product_id)
-            
         current_bid = 0
         for bid in data:
             comp = float(bid.bid)
@@ -113,7 +118,12 @@ def change_listing(request, product_id ,type):
         if current_bid >= float(request.POST["bid"]) and not form.is_valid():
             error="The bid is lower than or equal to the previous one"
             return redirect(reverse("message", args=("error", error)))
-
+        elif data_bid:
+            data_bid.bid = request.POST["bid"]
+            data_bid.save()
+            success="The bid has been remade!"
+            return redirect(reverse("message", args=("success", success)))
+            
         else:
             form.save()
             success="The bid has been made"
@@ -171,8 +181,10 @@ def message(request, type, message):
 
 
 
-def listing_view(request, product_id, success = None, error = None):
+def listing_view(request, product_id ):
     #try:
+    success = None
+    error = None
     try:
         user = User.objects.get(username= request.user)
     except User.DoesNotExist:
@@ -211,7 +223,15 @@ def listing_view(request, product_id, success = None, error = None):
         comp = float(bid.bid)
         if comp > float(current_bid):
             current_bid = comp
-
+    active = product.status
+    won = False
+    if not active:
+        try:
+            data_bid = Bidding.objects.get(bid = current_bid, listing = product_id)
+        except Bidding.DoesNotExist:
+            data_bid = None
+        if data_bid.user == request.user:
+            won = True
     return render(request, "auctions/listing.html", {
         "product": product,
         "owner": owner,
@@ -219,9 +239,9 @@ def listing_view(request, product_id, success = None, error = None):
         "comments": comments,
         "form": bid_form,
         "comment": comments_form,
-        "error": error,
-        "success": success,
-        "status": status 
+        "status": status,
+        "active": active,
+        "won": won 
     })
 
 @login_required(login_url="login")
@@ -240,3 +260,47 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "data": data
     })
+
+def categories(request, type=None):
+    if not type:
+        data = Category.objects.all()
+        return render(request,"auctions/categories.html",{
+            "data":data
+        })
+    elif type:
+        data_category = Category.objects.get(category = type)
+        if data_category:
+            data = Listing.objects.filter(category = data_category)
+            return render(request,"auctions/category.html",{
+                "data": data,
+                "type": type
+            })
+    pass
+@login_required(login_url="login")
+def your_listing(request):
+    try:
+        user = User.objects.get(username = request.user)
+    except User.DoesNotExist:
+        user = None
+    
+    
+    data = Listing.objects.filter(owner = user)
+
+    return render(request, "auctions/your_listing.html",{
+        "data": data
+    })
+
+@login_required(login_url="login")
+def placed_bid(request):
+    try:
+        user = User.objects.get(username = request.user)
+    except User.DoesNotExist:
+        user = None
+    
+    data = Bidding.objects.filter(user = user)
+
+    if data:
+        return render(request, "auctions/placed_bid.html",{
+            "data": data
+        })
+    return redirect(reverse("message", args=("error", "No listings")))

@@ -1,0 +1,27 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+<h1>Category: {{type}}</h1>
+<ul>
+<div class="card-deck">
+{% for list in data %}
+<div class="card" style="max-width: 25%;">
+    <img class="card-img-top" src="{{list.image.url}}" alt="{{list.name}}" style="max-height: 230px;">
+    <div class="card-body">
+        <a href="{% url 'listing' list.id %}" method="post">
+            <h5 class="card-title">{{list.name}}</h5>
+            <span class="d-inline-block text-truncate" style="max-width: 24%;">
+                <p class="card-text">{{list.description}} ...</p>
+            </span>
+        </a>
+    </div>
+    <div class="card-footer">
+        <small class="text-muted">{{list.date}}</small>
+    </div>
+</div>
+{% empty %}
+<h3>No Listing Found!</h3>
+{% endfor %}
+</ul>
+</div>
+{% endblock body %}

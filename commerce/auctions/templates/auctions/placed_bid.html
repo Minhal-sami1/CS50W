@@ -1,0 +1,28 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+<h2>Placed Bidding:</h2>
+<br>
+{% if data %}
+<div class="card-deck" >
+    {% for list in data %}
+    <div class="card" style="max-width: 25%;">
+        <img class="card-img-top" src="{{list.listing.image.url}}" alt="{{list.listing.name}}" style="max-height: 230px;">
+        <div class="card-body">
+            <a href="{% url 'listing' list.listing.id %}" method="post">
+                <h5 class="card-title">{{list.name}}</h5>
+                <span class="d-inline-block text-truncate" style="max-width: 24%;">
+                    <p class="card-text">{{list.listing.description}} ...</p>
+                </span>
+            </a>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">{{list.listing.date}}</small>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<h1>No Bid Placed!</h1>
+{% endif %}
+{% endblock body %}
