@@ -1,0 +1,79 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+{% if user.is_authenticated %}
+<div class="card col-7 mx-auto" style="margin: 15px">
+  <h5 class="card-header">New Post</h5>
+  <div class="card-body">
+    {{form.data}}
+    {% csrf_token %}
+    <br>
+    <button id="post" class="btn btn-primary">POST!</button>
+  </div>
+</div>
+{% endif %}
+
+
+{% for post in  page_obj %}
+
+<div class="card text-center col-6 mx-auto"style="margin: 15px">
+  <div class="card-body">
+    {% if user.is_authenticated %}
+    <h5 class="card-title"><a href = "{% url 'profile' post.owner.id %}">{{post.owner}}</a></h5>
+    {% else %}
+    <h5 class="card-title">{{post.owner}}</h5>
+    
+    {% endif %}
+    
+    
+    <p class="card-text">{{post.data}}</p>
+    <hr>
+    <small class="text-muted">{{post.date}}</small>
+    
+    <br>
+    
+    
+    {% if user.is_authenticated %}
+    {% for like in likes_posts.items %}
+    {% if like.0 == post.id %}
+    <button class="btn btn-outline-danger" id = "like" data-post = "{{post.id}}" data-user="{{user.id}}" data-status = "">
+      ❤
+      <span id="likes">{{like.1}}</span>
+    </button>    
+    {% endif %}
+    {% endfor %}
+    {% if user.id == post.owner.id %}
+    <button type="button" id = "edit" data-post = "{{post.id}}" data-ownerid = "{{post.owner.id}}" data-user = "{{post.owner}}" data-time = "{{post.date}}" data-likes = "0"data-contents = "{{post.data}}"class="btn btn-outline-warning">Edit</button>
+    {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+{% endfor %}
+<nav aria-label="Paginator">
+  <ul class="pagination pagination-lg justify-content-center"> 
+
+    {% if page_obj.has_previous %}    
+    <li class="page-item ">
+      <a class="page-link" href="?page={{ page_obj.previous_page_number }}" >Previous</a>
+    </li>
+    {% endif %}
+    
+    <li class="page-item active" aria-current="page">
+      <a class="page-link">{{page_obj.number}} <span class="sr-only">Of {{page_obj.paginator.num_pages}}</span></a>
+    </li>
+
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+
+<div id ="newposts"></div>
+<div id ="ended"></div>
+<div id = "hidden" type = "hidden" value="{{user_value}}" style = "display:none">{{user_value}}</div>
+TODO
+{% endblock %}
